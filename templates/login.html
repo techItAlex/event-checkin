@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>Staff login</h1>
+<form method="post">
+  <input type="hidden" name="next" value="{{ next }}">
+  <label>Staff PIN
+    <input name="pin" type="password" inputmode="numeric" required autofocus>
+    {% if error %}<span class="err">{{ error }}</span>{% endif %}
+  </label>
+  <button type="submit">Enter</button>
+</form>
+{% endblock %}

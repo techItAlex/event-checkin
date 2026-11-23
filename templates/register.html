@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>{{ event_name }}</h1>
+<p class="muted">Register to receive your QR ticket by email.</p>
+<form id="regform" method="post" action="{{ url_for('register_post') }}" novalidate>
+  <label>Full Name
+    <input name="full_name" required minlength="2" maxlength="100" value="{{ values.get('full_name','') }}" autocomplete="name">
+    {% if errors.full_name %}<span class="err">{{ errors.full_name }}</span>{% endif %}
+  </label>
+  <label>Email Address
+    <input name="email" type="email" required maxlength="254" value="{{ values.get('email','') }}" autocomplete="email">
+    {% if errors.email %}<span class="err">{{ errors.email }}</span>{% endif %}
+  </label>
+  <label>Organization
+    <input name="organization" required minlength="2" maxlength="100" value="{{ values.get('organization','') }}" autocomplete="organization">
+    {% if errors.organization %}<span class="err">{{ errors.organization }}</span>{% endif %}
+  </label>
+  <label>Contact Number
+    <input name="contact_number" type="tel" required placeholder="09171234567" pattern="\+?[0-9 \-]{10,17}" value="{{ values.get('contact_number','') }}" autocomplete="tel">
+    {% if errors.contact_number %}<span class="err">{{ errors.contact_number }}</span>{% endif %}
+  </label>
+  <button type="submit">Register</button>
+</form>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='register.js') }}"></script>{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block mainclass %}card wide{% endblock %}
+{% block body %}
+<h1>Check-in</h1>
+<p class="muted"><a href="{{ url_for('attendees') }}">Attendee list</a></p>
+<div id="reader"></div>
+<input id="manual" placeholder="USB scanner / type token and press Enter" autocomplete="off" autofocus>
+<div id="result" class="result idle">Waiting for scan…</div>
+{% endblock %}
+{% block scripts %}
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="{{ url_for('static', filename='checkin.js') }}"></script>
+{% endblock %}

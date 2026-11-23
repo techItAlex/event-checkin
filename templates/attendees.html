@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block mainclass %}card xwide{% endblock %}
+{% block body %}
+<h1>Attendees</h1>
+<p><b>Total:</b> {{ total }} &nbsp; <b>Checked In:</b> {{ checked }}
+  &nbsp; <a href="{{ url_for('checkin_page') }}">Scanner</a>
+  &nbsp; <a class="btn" href="{{ url_for('attendees_csv') }}">Download CSV</a></p>
+<input id="search" placeholder="Search name, email, organization…">
+<div class="scroll">
+<table id="tbl">
+  <thead><tr><th>Name</th><th>Email</th><th>Organization</th><th>Contact</th><th>Status</th><th>Email status</th><th></th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+  <tr>
+    <td>{{ r.full_name }}</td><td>{{ r.email }}</td><td>{{ r.organization }}</td><td>{{ r.contact_number }}</td>
+    <td class="{{ 'ok' if r.status == 'Checked In' }}">{{ r.status }}</td>
+    <td>{{ r.email_status }}</td>
+    <td><form method="post" action="{{ url_for('resend', att_id=r.id) }}"><button class="small">Resend</button></form></td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<script>
+document.getElementById('search').addEventListener('input', e => {
+  const q = e.target.value.toLowerCase();
+  document.querySelectorAll('#tbl tbody tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
+</script>
+{% endblock %}
