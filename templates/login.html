@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block body %}
 <h1>Staff login</h1>
-<form method="post">
+<p class="muted">Enter the staff PIN to continue.</p>
+<form class="stack" method="post">
   <input type="hidden" name="next" value="{{ next }}">
   <label>Staff PIN
     <input name="pin" type="password" inputmode="numeric" required autofocus>

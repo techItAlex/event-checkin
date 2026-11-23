@@ -2,9 +2,9 @@
 {% block mainclass %}card wide{% endblock %}
 {% block body %}
 <h1>Check-in</h1>
-<p class="muted"><a href="{{ url_for('attendees') }}">Attendee list</a></p>
+<p class="muted">Scan the QR with the camera, or type / paste the ticket code and press Enter.</p>
 <div id="reader"></div>
-<input id="manual" placeholder="USB scanner / type token and press Enter" autocomplete="off" autofocus>
+<input id="manual" placeholder="Ticket code, then Enter" autocomplete="off" autofocus>
 <div id="result" class="result idle">Waiting for scan…</div>
 {% endblock %}
 {% block scripts %}

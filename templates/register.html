@@ -2,7 +2,7 @@
 {% block body %}
 <h1>{{ event_name }}</h1>
 <p class="muted">Register to receive your QR ticket by email.</p>
-<form id="regform" method="post" action="{{ url_for('register_post') }}" novalidate>
+<form class="stack" id="regform" method="post" action="{{ url_for('register_post') }}" novalidate>
   <label>Full Name
     <input name="full_name" required minlength="2" maxlength="100" value="{{ values.get('full_name','') }}" autocomplete="name">
     {% if errors.full_name %}<span class="err">{{ errors.full_name }}</span>{% endif %}

@@ -11,7 +11,7 @@ import threading
 from functools import wraps
 
 from dotenv import load_dotenv
-from flask import (Flask, Response, abort, jsonify, redirect, render_template,
+from flask import (Flask, Response, abort, flash, jsonify, redirect, render_template,
                    request, session, url_for)
 
 load_dotenv()
@@ -24,6 +24,7 @@ logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "change-me")
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"  # blocks cross-site POSTs to admin actions
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 PHONE_RE = re.compile(r"^\+?\d{10,13}$")
@@ -173,6 +174,30 @@ def resend(att_id):
     if db.get_attendee(att_id) is None:
         abort(404)
     threading.Thread(target=mailer.send_ticket, args=(att_id,), daemon=True).start()
+    return redirect(url_for("attendees"))
+
+
+@app.route("/admin/reset-checkins", methods=["POST"])
+@staff_required
+def reset_checkins():
+    n = db.reset_checkins()
+    flash(f"Reset {n} check-in(s). Everyone is back to Registered.")
+    return redirect(url_for("attendees"))
+
+
+@app.route("/admin/delete-all", methods=["POST"])
+@staff_required
+def delete_all():
+    n = db.delete_all()
+    for d in (qr_utils.qr_dir(), os.environ.get("OUTBOX_DIR", "outbox")):
+        if os.path.isdir(d):
+            for f in os.listdir(d):
+                if f.endswith((".png", ".eml")):
+                    try:
+                        os.remove(os.path.join(d, f))
+                    except OSError:
+                        pass
+    flash(f"Deleted {n} attendee(s). Their emails can register again.")
     return redirect(url_for("attendees"))
 
 

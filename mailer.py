@@ -25,7 +25,8 @@ def build_message(att, qr_path, sender):
     # Plain-text fallback
     msg.set_content(
         f"Hi {name},\n\nYou're registered for {event}.\nDate: {date}\nVenue: {venue}\n\n"
-        "Show the QR code (attached as ticket.png) at the entrance.\n"
+        "Show the QR code (attached as ticket.png) at the entrance.\n\n"
+        f"Ticket code (if the QR can't be scanned): {att['ticket_token']}\n"
     )
     # HTML version with the QR shown inline via CID
     msg.add_alternative(
@@ -35,6 +36,8 @@ def build_message(att, qr_path, sender):
 <p>&#128197; {html.escape(date)}<br>&#128205; {html.escape(venue)}</p>
 <p>Show this QR code at the entrance:</p>
 <p><img src="cid:qrcode" alt="Your QR ticket" width="260" height="260"></p>
+<p>Can't scan? Give staff this ticket code:<br>
+<code style="font-size:16px;background:#f3f4f6;padding:6px 10px;border-radius:4px;display:inline-block;margin-top:4px">{html.escape(att['ticket_token'])}</code></p>
 <p style="color:#666;font-size:13px">The same image is attached as ticket.png as a backup.</p>
 </body></html>""",
         subtype="html",

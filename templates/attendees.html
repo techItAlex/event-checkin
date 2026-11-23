@@ -2,10 +2,20 @@
 {% block mainclass %}card xwide{% endblock %}
 {% block body %}
 <h1>Attendees</h1>
-<p><b>Total:</b> {{ total }} &nbsp; <b>Checked In:</b> {{ checked }}
-  &nbsp; <a href="{{ url_for('checkin_page') }}">Scanner</a>
-  &nbsp; <a class="btn" href="{{ url_for('attendees_csv') }}">Download CSV</a></p>
-<input id="search" placeholder="Search name, email, organization…">
+<p class="muted">Everyone who registered, and who has arrived.</p>
+
+<div class="stats">
+  <div class="stat"><b>{{ total }}</b><span>Registered</span></div>
+  <div class="stat"><b>{{ checked }}</b><span>Checked in</span></div>
+  <div class="stat"><b>{{ total - checked }}</b><span>Not yet arrived</span></div>
+</div>
+
+<div class="toolbar">
+  <input id="search" placeholder="Search name, email, organization…">
+  <a class="btn ghost" href="{{ url_for('checkin_page') }}">Open scanner</a>
+  <a class="btn" href="{{ url_for('attendees_csv') }}">Download CSV</a>
+</div>
+
 <div class="scroll">
 <table id="tbl">
   <thead><tr><th>Name</th><th>Email</th><th>Organization</th><th>Contact</th><th>Status</th><th>Email status</th><th></th></tr></thead>
@@ -13,14 +23,32 @@
   {% for r in rows %}
   <tr>
     <td>{{ r.full_name }}</td><td>{{ r.email }}</td><td>{{ r.organization }}</td><td>{{ r.contact_number }}</td>
-    <td class="{{ 'ok' if r.status == 'Checked In' }}">{{ r.status }}</td>
-    <td>{{ r.email_status }}</td>
-    <td><form method="post" action="{{ url_for('resend', att_id=r.id) }}"><button class="small">Resend</button></form></td>
+    <td><span class="badge {{ 'ok' if r.status == 'Checked In' }}">{{ r.status }}</span></td>
+    <td><span class="badge {{ 'ok' if r.email_status == 'sent' else 'bad' if r.email_status == 'failed' else 'warn' }}">{{ r.email_status }}</span></td>
+    <td><form method="post" action="{{ url_for('resend', att_id=r.id) }}"><button class="small ghost">Resend</button></form></td>
   </tr>
+  {% else %}
+  <tr><td colspan="7" class="empty">No attendees yet.</td></tr>
   {% endfor %}
   </tbody>
 </table>
 </div>
+
+<div class="danger-zone">
+  <h2>Reset (for testing / demos)</h2>
+  <p class="muted" style="margin:0">Staff only. Use these to run the simulation again.</p>
+  <div class="actions">
+    <form method="post" action="{{ url_for('reset_checkins') }}"
+          onsubmit="return confirm('Set ALL attendees back to Registered? Registrations are kept.')">
+      <button class="warn" {{ 'disabled' if not total }}>Reset all check-ins</button>
+    </form>
+    <form method="post" action="{{ url_for('delete_all') }}"
+          onsubmit="return confirm('DELETE ALL {{ total }} attendees and their QR files? This cannot be undone. Their emails will be able to register again.')">
+      <button class="danger" {{ 'disabled' if not total }}>Delete all attendees</button>
+    </form>
+  </div>
+</div>
+
 <script>
 document.getElementById('search').addEventListener('input', e => {
   const q = e.target.value.toLowerCase();

@@ -85,6 +85,23 @@ def set_email_status(att_id, status):
         conn.execute("UPDATE attendees SET email_status=? WHERE id=?", (status, att_id))
 
 
+def reset_checkins():
+    """Set every attendee back to 'Registered'. Returns how many rows changed."""
+    with connect() as conn:
+        return conn.execute(
+            "UPDATE attendees SET status='Registered', checked_in_at=NULL "
+            "WHERE status!='Registered'"
+        ).rowcount
+
+
+def delete_all():
+    """Remove every attendee (frees their emails to register again). Returns the count."""
+    with connect() as conn:
+        n = conn.execute("DELETE FROM attendees").rowcount
+        conn.execute("DELETE FROM sqlite_sequence WHERE name='attendees'")
+        return n
+
+
 def check_in(token):
     """Returns ('ok'|'already'|'invalid', row). Atomic: only one scan can flip the status."""
     with connect() as conn:
